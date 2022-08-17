@@ -1,0 +1,26 @@
+@import url('./main-layout.css');
+@import url('./views/containers-view.css');
+@import url('./views/transações-view.css');
+@import url('./views/relatorio-view.css');
+@import url('line-awesome/dist/line-awesome/css/line-awesome.min.css');
+@import url('@fontsource/fira-sans');    html {
+      --lumo-border-radius: calc(var(--lumo-size-m) / 2);
+      --lumo-size-xl: 3rem;
+      --lumo-size-l: 2.5rem;
+      --lumo-size-m: 2rem;
+      --lumo-size-s: 1.75rem;
+      --lumo-size-xs: 1.5rem;
+--lumo-font-family: Fira Sans;
+
+    }
+
+    [theme~="dark"] {
+
+    }
+
+@media all and (max-width: 1100px) {
+    .list-view.editing .toolbar,
+    .list-view.editing .contact-grid {
+        display: none;
+    }
+}
