@@ -222,7 +222,10 @@ public class MovimentacoesView extends Div {
                 saveButton.getStyle().set("margin-right","auto");
                 dialog.getFooter().add(saveButton);
 
-                Button cancelButton = new Button("Cancelar", (cancel) -> dialog.close());
+                Button cancelButton = new Button("Cancelar", (cancel) -> {
+                    dialog.close();
+                    refreshGrid();
+                });
                 cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
                 dialog.getFooter().add(cancelButton);
                 dialog.open();
