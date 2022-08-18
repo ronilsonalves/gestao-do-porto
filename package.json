@@ -384,8 +384,6 @@
     "construct-style-sheets-polyfill": "$construct-style-sheets-polyfill",
     "lit": "$lit",
     "@polymer/polymer": "$@polymer/polymer",
-    "date-fns": "$date-fns",
-    "@fontsource/fira-sans": "$@fontsource/fira-sans",
-    "line-awesome": "$line-awesome"
+    "date-fns": "$date-fns"
   }
 }

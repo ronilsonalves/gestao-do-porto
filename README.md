@@ -4,7 +4,7 @@ Este projeto tem como objetivo a criação de um CRUD simples para gerenciar
 contêineres e suas movimentações de um porto utilizando o Spring para o Back-end e o 
 Vaadin Flow para servir o front-end da aplicação.
 
-> Você pode vizualizar a aplicação rodando em servidor do Heroku [_clicando aqui_](https://gp.apps.ronilsonalves.com)
+> Você pode vizualizar a aplicação rodando em um container do serviço de applicativos da Azure [_clicando aqui_](https://gestaodoportoapp.azurewebsites.net)
 
 ## Captura de tela
 ![Captura de tela](screenshot.png)
@@ -42,12 +42,3 @@ http://localhost:8080 em seu navegador.
 
 Você também pode importar o projeto em sua IDE como você faz com
 qualquer projeto Maven.
-
-## Estrutura do Projeto
-
-- `MainLayout.java` in `src/main/java` contains the navigation setup (i.e., the
-  side/top bar and the main menu). This setup uses
-  [App Layout](https://vaadin.com/components/vaadin-app-layout).
-- `views` package in `src/main/java` contains the server-side Java views of your application.
-- `views` folder in `frontend/` contains the client-side JavaScript views of your application.
-- `themes` folder in `frontend/` contains the custom CSS styles.
