@@ -5,6 +5,7 @@ import org.hibernate.annotations.Type;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @MappedSuperclass
@@ -15,12 +16,18 @@ public abstract class GenericEntity<T extends GenericEntity> {
     @Type(type = "uuid-char")
     private UUID id;
 
+    private LocalDateTime createdAt = LocalDateTime.now();
+
     public UUID getId() {
         return id;
     }
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
     @Override

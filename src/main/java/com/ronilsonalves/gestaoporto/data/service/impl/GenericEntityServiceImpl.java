@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -44,8 +44,19 @@ public abstract class GenericEntityServiceImpl implements GenericEntityService {
         return repository.findAll(pageable);
     }
 
+
+    @Override
+    public List<GenericEntity> findTop6ByOrderByCreatedAt() {
+        return repository.findTop6ByOrderByCreatedAtDesc();
+    }
+
     @Override
     public void delete(UUID id) throws DataIntegrityViolationException {
         repository.deleteById(id);
+    }
+
+    @Override
+    public int count() {
+        return (int) repository.count();
     }
 }

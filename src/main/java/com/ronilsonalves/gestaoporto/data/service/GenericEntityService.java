@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,6 +18,8 @@ public interface GenericEntityService {
     GenericEntity update(GenericEntity entity);
 
     Page<GenericEntity> list(Pageable pageable);
+
+    List<GenericEntity> findTop6ByOrderByCreatedAt();
 
     void delete(UUID id) throws SQLException;
 
