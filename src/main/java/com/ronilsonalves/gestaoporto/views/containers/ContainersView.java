@@ -1,12 +1,13 @@
 package com.ronilsonalves.gestaoporto.views.containers;
 
+import com.ronilsonalves.gestaoporto.data.entity.Client;
 import com.ronilsonalves.gestaoporto.data.entity.Container;
 import com.ronilsonalves.gestaoporto.data.entity.GenericEntity;
 import com.ronilsonalves.gestaoporto.data.enums.Categoria;
 import com.ronilsonalves.gestaoporto.data.enums.Status;
 import com.ronilsonalves.gestaoporto.data.enums.Tipo;
+import com.ronilsonalves.gestaoporto.data.repository.ClientRepository;
 import com.ronilsonalves.gestaoporto.data.repository.ContainerRepository;
-import com.ronilsonalves.gestaoporto.data.service.impl.ContainerServiceImpl;
 import com.ronilsonalves.gestaoporto.data.service.impl.GenericEntityServiceImpl;
 import com.ronilsonalves.gestaoporto.views.MainLayout;
 import com.ronilsonalves.gestaoporto.views.transacoes.MovimentacoesView;
@@ -38,24 +39,26 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
-import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @PageTitle("Gestão de Containers - Gestão do Porto")
-@Route(value = "/:containerID?/:action?(edit)", layout = MainLayout.class)
+@Route(value = "/containers/:containerID?/:action?(edit)", layout = MainLayout.class)
 @Uses(Icon.class)
 public class ContainersView extends Div implements BeforeEnterObserver {
 
     private final String CONTAINER_ID = "containerID";
-    private final String CONTAINER_EDIT_ROUTE_TEMPLATE = "/%s/edit";
+    private final String CONTAINER_EDIT_ROUTE_TEMPLATE = "/containers/%s/edit";
 
     private Grid<Container> grid = new Grid<>(Container.class, false);
     private GridContextMenu<Container> menu = grid.addContextMenu();
 
-    private TextField cliente;
+    private ComboBox<Client> cliente;
     private TextField numero;
     private ComboBox<Tipo> tipo;
     private ComboBox<Status> status;
@@ -70,19 +73,15 @@ public class ContainersView extends Div implements BeforeEnterObserver {
     private Container container;
 
     private final GenericEntityServiceImpl containerService;
+    private final GenericEntityServiceImpl clienteService;
 
     @Autowired
-    public ContainersView(ContainerRepository repository) {
-        this.containerService = new GenericEntityServiceImpl(repository) {
-            @Override
-            public int count() {
-                return 0;
-            }
-        };
+    public ContainersView(ContainerRepository repository, ClientRepository clientRepository) {
+        this.containerService = new GenericEntityServiceImpl(repository) {};
+        this.clienteService = new GenericEntityServiceImpl(clientRepository) {};
 
         addClassNames("containers-view");
 
-        // Create UI
         SplitLayout splitLayout = new SplitLayout();
 
         createGridLayout(splitLayout);
@@ -90,13 +89,11 @@ public class ContainersView extends Div implements BeforeEnterObserver {
 
         add(splitLayout);
 
-        // Configure Grid
         grid.addColumn("cliente").setAutoWidth(true);
         grid.addColumn("numero").setAutoWidth(true);
         grid.addColumn("tipo").setAutoWidth(true);
         grid.addColumn("status").setAutoWidth(true);
         grid.addColumn("categoria").setAutoWidth(true);
-        //grid.addColumn("movimentacoes").setAutoWidth(true);
         menu.addItem("Ver movimentações",event ->UI.getCurrent().navigate(MovimentacoesView.class));
 
         grid.setItems(query -> containerService.list(
@@ -198,7 +195,9 @@ public class ContainersView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        cliente = new TextField("Cliente");
+        cliente = new ComboBox<>("Doc. do Cliente");
+        cliente.setItems(getClientList());
+        cliente.setItemLabelGenerator(Client::getDocumento);
         numero = new TextField("Núm. do Container");
         tipo = new ComboBox<>("Tipo do Container");
         tipo.setItems(Tipo.values());
@@ -255,5 +254,9 @@ public class ContainersView extends Div implements BeforeEnterObserver {
         this.container = value;
         apagar.setEnabled(true);
         binder.readBean(this.container);
+    }
+
+    private List<Client> getClientList() {
+        return clienteService.list(Pageable.unpaged()).getContent().stream().map(genericEntity -> (Client) genericEntity).collect(Collectors.toList());
     }
 }

@@ -9,11 +9,9 @@ import com.ronilsonalves.gestaoporto.data.service.impl.ContainerServiceImpl;
 import com.ronilsonalves.gestaoporto.data.service.impl.GenericEntityServiceImpl;
 import com.ronilsonalves.gestaoporto.views.MainLayout;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
@@ -22,7 +20,6 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.gridpro.GridPro;
 import com.vaadin.flow.component.html.Div;
@@ -40,27 +37,19 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.data.provider.LazyDataView;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.LocalDateTimeRenderer;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @PageTitle("Gestão de Movimentações - Gestão do Porto")
 @Route(value = "/movimentacoes",layout = MainLayout.class)
@@ -315,7 +304,7 @@ public class MovimentacoesView extends Div {
         TextField movContainer = new TextField("Núm do Container",movimentacao.getContainer().getNumero(),movimentacao.getContainer().getNumero());
         movContainer.setReadOnly(true);
 
-        TextField movClient = new TextField("Cliente",movimentacao.getContainer().getCliente(),movimentacao.getContainer().getCliente());
+        TextField movClient = new TextField("Cliente",movimentacao.getContainer().getClient().getNome());
         movClient.setReadOnly(true);
 
         TextField movCategoria = new TextField("Categoria",movimentacao.getContainer().getCategoria().toString(),movimentacao.getContainer().getCategoria().toString());

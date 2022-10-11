@@ -7,14 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 @Entity
 @Table(name = "container")
@@ -24,26 +20,27 @@ import java.util.List;
 @NoArgsConstructor
 public class Container extends GenericEntity<GenericEntity> {
 
-    @NotBlank(message = "Campo obrigatório, por favor, preencha-o!")
-    private String cliente;
+    @ManyToOne(cascade = {
+            CascadeType.MERGE,CascadeType.DETACH,CascadeType.REFRESH
+    })
+    @JoinColumn(name = "cliente_id")
+    @NotNull(message = "Campo obrigatório, por favor, preencha-o!")
+    private Client client;
 
-    @NotBlank
+    @NotBlank(message = "Campo obrigatório, por favor, preencha-o!")
     @Column(unique = true, name = "numero")
     private String numero;
 
-    @NotNull
+    @NotNull(message = "Campo obrigatório, por favor, preencha-o!")
     @Enumerated(EnumType.STRING)
     private Tipo tipo;
 
-    @NotNull
+    @NotNull(message = "Campo obrigatório, por favor, preencha-o!")
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @NotNull
+    @NotNull(message = "Campo obrigatório, por favor, preencha-o!")
     @Enumerated(EnumType.STRING)
     private Categoria categoria;
-
-//    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    private List<Movimentacao> movimentacoes;
 
 }
