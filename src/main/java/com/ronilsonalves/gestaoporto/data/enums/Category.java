@@ -1,8 +1,8 @@
 package com.ronilsonalves.gestaoporto.data.enums;
 
-public enum Categoria {
+public enum Category {
     IMPORTAÇÃO("IMPORTAÇÃO"),EXPORTAÇÃO("EXPORTAÇÃO");
 
-    Categoria(String valor) {
+    Category(String valor) {
     }
 }

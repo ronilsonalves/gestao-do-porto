@@ -19,7 +19,7 @@ public class ContainerServiceImpl extends GenericEntityServiceImpl {
     }
 
     public Optional<Container> getContainerByNumber(String containerNum) {
-        return repository.findContainerByNumero(containerNum);
+        return repository.findContainerByNumber(containerNum);
     }
 
     @Override

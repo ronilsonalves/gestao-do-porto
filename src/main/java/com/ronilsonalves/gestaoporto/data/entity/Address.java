@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "enderecos")
+@Table(name = "addresses")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -24,24 +24,24 @@ public class Address extends GenericEntity<GenericEntity> {
 
     @NotBlank
     @Size(min = 4)
-    private String logradouro;
+    private String streetAddress;
 
     @NotBlank(message = "Por favor, insira o número do endereço")
-    private String numero;
+    private String number;
 
     @NotBlank
     @Size(min = 8,max = 8, message = "CEP deve conter 8 caracteres")
-    private String CEP;
+    private String ZIPCode;
 
     @NotBlank
     @Size(min = 5)
-    private String bairro;
+    private String neighborhood;
 
     @NotBlank
     @Size(min = 3)
-    private String cidade;
+    private String city;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private State estado;
+    private State state;
 }

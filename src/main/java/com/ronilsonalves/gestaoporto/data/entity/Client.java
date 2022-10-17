@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Table(name = "clientes")
+@Table(name = "clients")
 @Setter
 @Getter
 @AllArgsConstructor
@@ -25,29 +25,29 @@ public class Client extends GenericEntity<GenericEntity> {
 
     @NotEmpty(message = "Por favor, insira o nome do cliente")
     @Size(min = 2)
-    private String nome;
+    private String name;
 
     @NotEmpty(message = "Insira o sobrenome do cliente")
     @Size(min = 3)
-    private String sobrenome;
+    private String surname;
 
     @NotEmpty(message = "Por favor, insira um documento válido.")
     @Size(min = 11,max = 14)
-    @UniqueElements(message = "Documento já cadastrado no sistema")
-    private String documento;
+    @Column(unique = true)
+    private String document;
 
     @NotNull(message = "Por favor, insira uma data de nascimento válida.")
-    private LocalDate dataDeNascimento;
+    private LocalDate birthDate;
 
     @NotEmpty(message = "Por favor, insira o endereço de e-mail.")
     @Email(message = "Por favor, insira um email válido.")
     private String email;
 
     @NotEmpty(message = "Por favor, insira um telefone válido.")
-    private String telefone;
+    private String phone;
 
     @OneToOne
-    @JoinColumn(name = "endereco_id")
+    @JoinColumn(name = "address_id")
     @NotNull(message = "Por favor, insira um endereço válido.")
     private Address address;
 
@@ -57,6 +57,6 @@ public class Client extends GenericEntity<GenericEntity> {
 
     @Override
     public String toString() {
-        return getNome() + " " + getSobrenome();
+        return getName() + " " + getSurname();
     }
 }

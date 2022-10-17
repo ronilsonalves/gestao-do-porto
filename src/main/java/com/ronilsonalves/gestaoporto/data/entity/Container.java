@@ -1,8 +1,8 @@
 package com.ronilsonalves.gestaoporto.data.entity;
 
-import com.ronilsonalves.gestaoporto.data.enums.Categoria;
+import com.ronilsonalves.gestaoporto.data.enums.Category;
 import com.ronilsonalves.gestaoporto.data.enums.Status;
-import com.ronilsonalves.gestaoporto.data.enums.Tipo;
+import com.ronilsonalves.gestaoporto.data.enums.ContainerType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,11 +29,11 @@ public class Container extends GenericEntity<GenericEntity> {
 
     @NotBlank(message = "Campo obrigatório, por favor, preencha-o!")
     @Column(unique = true, name = "numero")
-    private String numero;
+    private String number;
 
     @NotNull(message = "Campo obrigatório, por favor, preencha-o!")
     @Enumerated(EnumType.STRING)
-    private Tipo tipo;
+    private ContainerType containerType;
 
     @NotNull(message = "Campo obrigatório, por favor, preencha-o!")
     @Enumerated(EnumType.STRING)
@@ -41,6 +41,6 @@ public class Container extends GenericEntity<GenericEntity> {
 
     @NotNull(message = "Campo obrigatório, por favor, preencha-o!")
     @Enumerated(EnumType.STRING)
-    private Categoria categoria;
+    private Category category;
 
 }

@@ -1,11 +1,9 @@
 package com.ronilsonalves.gestaoporto.data.enums;
 
-import com.vaadin.exampledata.DataType;
-
-public enum Tipo {
+public enum ContainerType {
     VINTE(20),QUARENTA(40);
     private final int valor;
-    Tipo(int valor) {
+    ContainerType(int valor) {
         this.valor = valor;
     }
 

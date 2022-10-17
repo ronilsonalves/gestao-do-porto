@@ -3,14 +3,14 @@ package com.ronilsonalves.gestaoporto.views.containers;
 import com.ronilsonalves.gestaoporto.data.entity.Client;
 import com.ronilsonalves.gestaoporto.data.entity.Container;
 import com.ronilsonalves.gestaoporto.data.entity.GenericEntity;
-import com.ronilsonalves.gestaoporto.data.enums.Categoria;
+import com.ronilsonalves.gestaoporto.data.enums.Category;
 import com.ronilsonalves.gestaoporto.data.enums.Status;
-import com.ronilsonalves.gestaoporto.data.enums.Tipo;
+import com.ronilsonalves.gestaoporto.data.enums.ContainerType;
 import com.ronilsonalves.gestaoporto.data.repository.ClientRepository;
 import com.ronilsonalves.gestaoporto.data.repository.ContainerRepository;
 import com.ronilsonalves.gestaoporto.data.service.impl.GenericEntityServiceImpl;
 import com.ronilsonalves.gestaoporto.views.MainLayout;
-import com.ronilsonalves.gestaoporto.views.transacoes.MovimentacoesView;
+import com.ronilsonalves.gestaoporto.views.transactions.TransactionsView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -52,21 +52,20 @@ import java.util.stream.Collectors;
 @Uses(Icon.class)
 public class ContainersView extends Div implements BeforeEnterObserver {
 
-    private final String CONTAINER_ID = "containerID";
     private final String CONTAINER_EDIT_ROUTE_TEMPLATE = "/containers/%s/edit";
 
     private Grid<Container> grid = new Grid<>(Container.class, false);
     private GridContextMenu<Container> menu = grid.addContextMenu();
 
-    private ComboBox<Client> cliente;
-    private TextField numero;
-    private ComboBox<Tipo> tipo;
+    private ComboBox<Client> client;
+    private TextField containerNumber;
+    private ComboBox<ContainerType> containerType;
     private ComboBox<Status> status;
-    private ComboBox<Categoria> categoria;
+    private ComboBox<Category> category;
 
-    private Button cancelar = new Button("Cancelar");
-    private Button salvar = new Button("Salvar container");
-    private Button apagar = new Button("Excluir");
+    private Button cancelBtn = new Button("Cancelar");
+    private Button saveBtn = new Button("Salvar container");
+    private Button deleteBtn = new Button("Excluir");
 
     private BeanValidationBinder<Container> binder;
 
@@ -89,12 +88,12 @@ public class ContainersView extends Div implements BeforeEnterObserver {
 
         add(splitLayout);
 
-        grid.addColumn("cliente").setAutoWidth(true);
-        grid.addColumn("numero").setAutoWidth(true);
-        grid.addColumn("tipo").setAutoWidth(true);
+        grid.addColumn("client").setAutoWidth(true);
+        grid.addColumn("number").setAutoWidth(true);
+        grid.addColumn("containerType").setAutoWidth(true);
         grid.addColumn("status").setAutoWidth(true);
-        grid.addColumn("categoria").setAutoWidth(true);
-        menu.addItem("Ver movimentações",event ->UI.getCurrent().navigate(MovimentacoesView.class));
+        grid.addColumn("category").setAutoWidth(true);
+        menu.addItem("Ver movimentações", event ->UI.getCurrent().navigate(TransactionsView.class));
 
         grid.setItems(query -> containerService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
@@ -119,18 +118,18 @@ public class ContainersView extends Div implements BeforeEnterObserver {
         binder = new BeanValidationBinder<>(Container.class);
 
         // Validando os valores dos imputs
-        binder.forField(numero).withValidator(numeroContainer -> Pattern.matches("^[a-zA-Z]{4}[0-9]{7}$",numeroContainer),
+        binder.forField(containerNumber).withValidator(numeroContainer -> Pattern.matches("^[a-zA-Z]{4}[0-9]{7}$",numeroContainer),
                 "Por favor, use uma sequência de 4 letras maiúsculas e 7 números. Ex.: CONT1234567")
-                .bind(Container::getNumero,Container::setNumero);
+                .bind(Container::getNumber,Container::setNumber);
 
         binder.bindInstanceFields(this);
 
-        cancelar.addClickListener(e -> {
+        cancelBtn.addClickListener(e -> {
             clearForm();
             refreshGrid();
         });
 
-        apagar.addClickListener(buttonClickEvent -> {
+        deleteBtn.addClickListener(buttonClickEvent -> {
             try {
                 binder.writeBean(this.container);
                 containerService.delete(this.container.getId());
@@ -149,7 +148,7 @@ public class ContainersView extends Div implements BeforeEnterObserver {
             }
         });
 
-        salvar.addClickListener(e  -> {
+        saveBtn.addClickListener(e  -> {
             try {
                 if (this.container == null) {
                     this.container = new Container();
@@ -171,6 +170,7 @@ public class ContainersView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
+        String CONTAINER_ID = "containerID";
         Optional<UUID> containerId = event.getRouteParameters().get(CONTAINER_ID).map(UUID::fromString);
         if (containerId.isPresent()) {
             Optional<GenericEntity> containerFromBackend = containerService.get(containerId.get());
@@ -195,18 +195,18 @@ public class ContainersView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        cliente = new ComboBox<>("Doc. do Cliente");
-        cliente.setItems(getClientList());
-        cliente.setItemLabelGenerator(Client::getDocumento);
-        numero = new TextField("Núm. do Container");
-        tipo = new ComboBox<>("Tipo do Container");
-        tipo.setItems(Tipo.values());
-        tipo.setItemLabelGenerator(tipo1 -> String.valueOf(tipo1.getValor()));
+        client = new ComboBox<>("Doc. do Cliente");
+        client.setItems(getClientList());
+        client.setItemLabelGenerator(Client::getDocument);
+        containerNumber = new TextField("Núm. do Container");
+        containerType = new ComboBox<>("Container Type");
+        containerType.setItems(ContainerType.values());
+        containerType.setItemLabelGenerator(contType -> String.valueOf(contType.getValor()));
         status = new ComboBox<>("Status");
         status.setItems(Status.values());
-        categoria = new ComboBox<>("Categoria");
-        categoria.setItems(Categoria.values());
-        Component[] fields = new Component[]{cliente,numero,tipo,status,categoria};
+        category = new ComboBox<>("Categoria");
+        category.setItems(Category.values());
+        Component[] fields = new Component[]{client,containerNumber,containerType,status,category};
 
         formLayout.add(fields);
         formLayout.setResponsiveSteps(
@@ -222,13 +222,13 @@ public class ContainersView extends Div implements BeforeEnterObserver {
     private void createButtonLayout(Div editorLayoutDiv) {
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setClassName("button-layout");
-        apagar.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        deleteBtn.addThemeVariants(ButtonVariant.LUMO_ERROR);
         if(this.container == null) {
-            apagar.setEnabled(false);
+            deleteBtn.setEnabled(false);
         }
-        cancelar.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        salvar.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonLayout.add(salvar, cancelar, apagar);
+        cancelBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        buttonLayout.add(saveBtn, cancelBtn, deleteBtn);
         editorLayoutDiv.add(buttonLayout);
     }
 
@@ -243,16 +243,17 @@ public class ContainersView extends Div implements BeforeEnterObserver {
     private void refreshGrid() {
         grid.select(null);
         grid.getLazyDataView().refreshAll();
+        clearForm();
     }
 
     private void clearForm() {
         populateForm(null);
-        apagar.setEnabled(false);
+        deleteBtn.setEnabled(false);
     }
 
     private void populateForm(Container value) {
         this.container = value;
-        apagar.setEnabled(true);
+        deleteBtn.setEnabled(true);
         binder.readBean(this.container);
     }
 

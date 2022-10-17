@@ -9,5 +9,5 @@ import java.util.UUID;
 @Repository
 public interface ContainerRepository extends GenericEntityRepository<Container> {
 
-    Optional<Container> findContainerByNumero(String containerNum);
+    Optional<Container> findContainerByNumber(String containerNum);
 }

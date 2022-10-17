@@ -1,6 +1,6 @@
 package com.ronilsonalves.gestaoporto.data.entity;
 
-import com.ronilsonalves.gestaoporto.data.enums.TipoMovimentacao;
+import com.ronilsonalves.gestaoporto.data.enums.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,17 +16,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Movimentacao extends GenericEntity<GenericEntity> {
+public class Transaction extends GenericEntity<GenericEntity> {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private TipoMovimentacao tipoDeMovimentacao;
+    private TransactionType transactionType;
 
     @NotNull
-    private LocalDateTime dataHoraDeInicio;
+    private LocalDateTime startDateTime;
 
     @NotNull
-    private LocalDateTime dataHoraDeFim;
+    private LocalDateTime endDateTime;
 
     @NotNull
     @ManyToOne(cascade = {

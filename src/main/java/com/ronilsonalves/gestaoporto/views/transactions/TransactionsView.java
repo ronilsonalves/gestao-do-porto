@@ -1,10 +1,10 @@
-package com.ronilsonalves.gestaoporto.views.transacoes;
+package com.ronilsonalves.gestaoporto.views.transactions;
 
 import com.ronilsonalves.gestaoporto.data.entity.Container;
-import com.ronilsonalves.gestaoporto.data.entity.Movimentacao;
-import com.ronilsonalves.gestaoporto.data.enums.TipoMovimentacao;
+import com.ronilsonalves.gestaoporto.data.entity.Transaction;
+import com.ronilsonalves.gestaoporto.data.enums.TransactionType;
 import com.ronilsonalves.gestaoporto.data.repository.ContainerRepository;
-import com.ronilsonalves.gestaoporto.data.repository.MovimentacaoRepository;
+import com.ronilsonalves.gestaoporto.data.repository.TransactionRepository;
 import com.ronilsonalves.gestaoporto.data.service.impl.ContainerServiceImpl;
 import com.ronilsonalves.gestaoporto.data.service.impl.GenericEntityServiceImpl;
 import com.ronilsonalves.gestaoporto.views.MainLayout;
@@ -20,7 +20,6 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.gridpro.GridPro;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
@@ -52,34 +51,33 @@ import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 
 @PageTitle("Gestão de Movimentações - Gestão do Porto")
-@Route(value = "/movimentacoes",layout = MainLayout.class)
+@Route(value = "/transactions",layout = MainLayout.class)
 @Uses(Icon.class)
-public class MovimentacoesView extends Div {
+public class TransactionsView extends Div {
 
-    private GridPro<Movimentacao> grid = new GridPro<>(Movimentacao.class);
-    private GridListDataView<Movimentacao> movimentacaoDataView;
-    private Grid.Column<Movimentacao> movimentationType;
-    private Grid.Column<Movimentacao> startDateAndTime;
-    private Grid.Column<Movimentacao> endDateAndTime;
-    private Grid.Column<Movimentacao> containerNumber;
+    private GridPro<Transaction> grid = new GridPro<>(Transaction.class);
+    private Grid.Column<Transaction> transactionTypeColumn;
+    private Grid.Column<Transaction> startDateAndTimeColumn;
+    private Grid.Column<Transaction> endDateAndTimeColumn;
+    private Grid.Column<Transaction> containerNumberColumn;
 
     //Campos para o formulário de edição/criação
-    private Select<TipoMovimentacao> tipoDeMovimentacao;
-    private DateTimePicker dataHoraDeInicio;
-    private DateTimePicker dataHoraDeFim;
-    private Select<Container> numeroDoContainer;
+    private Select<TransactionType> transactionType;
+    private DateTimePicker startDateAndTime;
+    private DateTimePicker endDateAndTime;
+    private Select<Container> containerNumber;
 
-    private Button addMovimentacao;
+    private Button addTransaction;
 
-    private BeanValidationBinder<Movimentacao> binder;
-    private Movimentacao movimentacao;
+    private BeanValidationBinder<Transaction> binder;
+    private Transaction transaction;
 
-    private final GenericEntityServiceImpl movimentacaoService;
+    private final GenericEntityServiceImpl transactionService;
     private final ContainerServiceImpl containerService;
 
 
-    public MovimentacoesView(MovimentacaoRepository repository, ContainerRepository CRepository) {
-        this.movimentacaoService = new GenericEntityServiceImpl(repository) {
+    public TransactionsView(TransactionRepository repository, ContainerRepository CRepository) {
+        this.transactionService = new GenericEntityServiceImpl(repository) {
             @Override
             public int count() {
                 return 0;
@@ -90,26 +88,26 @@ public class MovimentacoesView extends Div {
         addClassName("transacoes-view");
         setSizeFull();
         setHeightFull();
-        addMovimentacao = new Button("Adicionar Movimentação", new Icon(VaadinIcon.FILE_ADD), (add) -> {
+        addTransaction = new Button("Adicionar Movimentação", new Icon(VaadinIcon.FILE_ADD), (add) -> {
             Dialog dialog = new Dialog();
             dialog.getElement().setAttribute("aria-label","Adicionar nova movimentação");
 
-            VerticalLayout addLayout = createOrEdit(dialog,this.movimentacao);
+            VerticalLayout addLayout = createOrEdit(dialog,this.transaction);
             dialog.add(addLayout);
             dialog.setHeaderTitle("Adicionar nova movimentação");
 
             Button saveButton = new Button("Salvar",(salvar) -> {
                 try {
-                    if(this.movimentacao == null) {
-                        this.movimentacao = new Movimentacao();
+                    if(this.transaction == null) {
+                        this.transaction = new Transaction();
                     }
-                    binder.writeBean(this.movimentacao);
+                    binder.writeBean(this.transaction);
 
-                    movimentacaoService.save(this.movimentacao);
+                    transactionService.save(this.transaction);
                     refreshGrid();
                     Notification.show("Os detalhes da movimentação foran salvos com sucesso.");
                     dialog.close();
-                    UI.getCurrent().navigate(MovimentacoesView.class);
+                    UI.getCurrent().navigate(TransactionsView.class);
                 } catch (ValidationException validationException) {
                     Notification.show("Certifique-se de preencher todos os campos corretamente",
                                     4500, Notification.Position.BOTTOM_CENTER)
@@ -126,7 +124,7 @@ public class MovimentacoesView extends Div {
             dialog.open();
             add(dialog);
         });
-        VerticalLayout novaMovimentacao = new VerticalLayout(addMovimentacao);
+        VerticalLayout novaMovimentacao = new VerticalLayout(addTransaction);
         novaMovimentacao.setAlignItems(FlexComponent.Alignment.CENTER);
         createGrid();
         add(novaMovimentacao,grid);
@@ -143,10 +141,10 @@ public class MovimentacoesView extends Div {
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
 
         //List<Movimentacao> movimentacoes = getTransactions();
-        grid.setItems(query -> movimentacaoService.list(
+        grid.setItems(query -> transactionService.list(
                         PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream().map(genericEntity -> {
-                    Movimentacao response = new Movimentacao();
+                    Transaction response = new Transaction();
                     BeanUtils.copyProperties(genericEntity,response);
                     return response;
                 }));
@@ -191,16 +189,16 @@ public class MovimentacoesView extends Div {
                 dialog.setHeaderTitle("Editar movimentação");
                 Button saveButton = new Button("Salvar",(salvar) -> {
                     try {
-                        if(this.movimentacao == null) {
-                            this.movimentacao = new Movimentacao();
+                        if(this.transaction == null) {
+                            this.transaction = new Transaction();
                         }
-                        binder.writeBean(this.movimentacao);
+                        binder.writeBean(this.transaction);
 
-                        movimentacaoService.update(this.movimentacao);
+                        transactionService.update(this.transaction);
                         refreshGrid();
                         Notification.show("A movimentação foi atualizada.");
                         dialog.close();
-                        UI.getCurrent().navigate(MovimentacoesView.class);
+                        UI.getCurrent().navigate(TransactionsView.class);
                     } catch (ValidationException validationException) {
                         Notification.show("Certifique-se de preencher todos os campos corretamente",
                                         4500, Notification.Position.BOTTOM_CENTER)
@@ -226,16 +224,16 @@ public class MovimentacoesView extends Div {
 
                 VerticalLayout dialogLayout = showDetaisOrDelete(dialog,movimentacao);
                 dialog.add(dialogLayout);
-                dialog.setHeaderTitle(String.format("Excluir movimentação do Container \"%s\" ?",movimentacao.getContainer().getNumero()));
+                dialog.setHeaderTitle(String.format("Excluir movimentação do Container \"%s\" ?",movimentacao.getContainer().getNumber()));
                 Button deleteButton = new Button("Excluir", (delete) -> {
                     try {
-                        this.movimentacaoService.delete(movimentacao.getId());
+                        this.transactionService.delete(movimentacao.getId());
                     } catch (DataIntegrityViolationException e) {
                         throw new RuntimeException(e);
                     }
                     dialog.close();
                     refreshGrid();
-                    UI.getCurrent().navigate(MovimentacoesView.class);
+                    UI.getCurrent().navigate(TransactionsView.class);
                 });
                 deleteButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY,ButtonVariant.LUMO_ERROR);
                 deleteButton.getStyle().set("margin-right", "auto");
@@ -253,61 +251,62 @@ public class MovimentacoesView extends Div {
     }
 
     private void createMovimentationTypeColumn() {
-        movimentationType = grid.addColumn(new ComponentRenderer<>(movimentacao -> {
+        transactionTypeColumn = grid.addColumn(new ComponentRenderer<>(movimentacao -> {
             HorizontalLayout horizontalLayout = new HorizontalLayout();
             horizontalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
             Span span = new Span();
-            span.setClassName("movimentationType");
-            span.setText(movimentacao.getTipoDeMovimentacao().getValue());
+            span.setClassName("transactionTypeColumn");
+            span.setText(movimentacao.getTransactionType().getValue());
             horizontalLayout.add(span);
             return horizontalLayout;
-        })).setSortable(false).setComparator(Movimentacao::getTipoDeMovimentacao).setHeader("Tipo de Movimentação");
+        })).setSortable(false).setComparator(Transaction::getTransactionType).setHeader("Tipo de Movimentação");
     }
 
     private void createStartDateAndTimeColumn() {
-        startDateAndTime = grid.addColumn(new LocalDateTimeRenderer<>(Movimentacao::getDataHoraDeInicio,
+        startDateAndTimeColumn = grid.addColumn(new LocalDateTimeRenderer<>(Transaction::getStartDateTime,
                         DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")))
                 .setSortable(false)
-                .setComparator(Movimentacao::getDataHoraDeInicio).setHeader("Data&Hora de Início");
+                .setComparator(Transaction::getStartDateTime).setHeader("Data&Hora de Início");
     }
 
     private void createEndDateAndTimeColumn() {
-        endDateAndTime = grid.addColumn(new LocalDateTimeRenderer<>(Movimentacao::getDataHoraDeFim,
+        endDateAndTimeColumn = grid.addColumn(new LocalDateTimeRenderer<>(Transaction::getEndDateTime,
                         DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")))
                 .setSortable(false)
-                .setComparator(Movimentacao::getDataHoraDeFim).setHeader("Data&Hora de Término");
+                .setComparator(Transaction::getEndDateTime).setHeader("Data&Hora de Término");
     }
 
     private void createContainerNumberColumn() {
-        containerNumber = grid.addColumn(new ComponentRenderer<>(movimentacao -> {
+        containerNumberColumn = grid.addColumn(new ComponentRenderer<>(movimentacao -> {
             HorizontalLayout horizontalLayout = new HorizontalLayout();
             horizontalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
             Span span = new Span();
-            span.setClassName("containerNumber");
-            span.setText(movimentacao.getContainer().getNumero());
+            span.setClassName("containerNumberColumn");
+            span.setText(movimentacao.getContainer().getNumber());
             horizontalLayout.add(span);
             return horizontalLayout;
-        })).setSortable(false).setComparator(movimentacao -> movimentacao.getContainer().getNumero()).setHeader("Núm. do Container");
+        })).setSortable(false).setComparator(movimentacao -> movimentacao.getContainer().getNumber()).setHeader("Núm. do Container");
     }
 
-    private VerticalLayout showDetaisOrDelete(Dialog dialog,Movimentacao movimentacao) {
-        TextField movType = new TextField("Tipo de Movimentação",movimentacao.getTipoDeMovimentacao().getValue(),movimentacao.getTipoDeMovimentacao().getValue());
+    private VerticalLayout showDetaisOrDelete(Dialog dialog, Transaction transaction) {
+        TextField movType = new TextField("Tipo de Movimentação", transaction.getTransactionType().getValue(), transaction.getTransactionType().getValue());
         movType.setReadOnly(true);
 
-        TextField movDateStart = new TextField("Data&Hora de Início",movimentacao.getDataHoraDeInicio().toString(),movimentacao.getDataHoraDeInicio().toString());
+        TextField movDateStart = new TextField("Data&Hora de Início", transaction.getStartDateTime().toString(), transaction.getStartDateTime().toString());
         movDateStart.setVisible(true);
         movDateStart.setReadOnly(true);
 
-        TextField movDateEnd = new TextField("Data&Hora de Término",movimentacao.getDataHoraDeFim().toString(),movimentacao.getDataHoraDeFim().toString());
+        TextField movDateEnd = new TextField("Data&Hora de Término", transaction.getEndDateTime().toString(), transaction.getEndDateTime().toString());
         movDateEnd.setReadOnly(true);
 
-        TextField movContainer = new TextField("Núm do Container",movimentacao.getContainer().getNumero(),movimentacao.getContainer().getNumero());
+        TextField movContainer = new TextField("Núm do Container", transaction.getContainer().getNumber(), transaction.getContainer().getNumber());
         movContainer.setReadOnly(true);
 
-        TextField movClient = new TextField("Cliente",movimentacao.getContainer().getClient().getNome());
+        TextField movClient = new TextField("Cliente/Doc", transaction.getContainer().getClient().getName()+"/"+transaction.getContainer().getClient().getDocument(),
+                transaction.getContainer().getClient().getName()+"/"+transaction.getContainer().getClient().getDocument());
         movClient.setReadOnly(true);
 
-        TextField movCategoria = new TextField("Categoria",movimentacao.getContainer().getCategoria().toString(),movimentacao.getContainer().getCategoria().toString());
+        TextField movCategoria = new TextField("Categoria", transaction.getContainer().getCategory().toString(), transaction.getContainer().getCategory().toString());
         movCategoria.setReadOnly(true);
 
         VerticalLayout fieldLayout = new VerticalLayout(movType,movDateStart,movDateEnd,movContainer,movClient,movCategoria);
@@ -319,54 +318,54 @@ public class MovimentacoesView extends Div {
         return fieldLayout;
     }
 
-    private VerticalLayout createOrEdit(Dialog dialog, Movimentacao movimentacao) {
+    private VerticalLayout createOrEdit(Dialog dialog, Transaction transaction) {
 
-        binder = new BeanValidationBinder<>(Movimentacao.class);
+        binder = new BeanValidationBinder<>(Transaction.class);
 
-        if(movimentacao != null) {
-            this.movimentacao = movimentacao;
-            binder.readBean(this.movimentacao);
+        if(transaction != null) {
+            this.transaction = transaction;
+            binder.readBean(this.transaction);
         }
 
         FormLayout formLayout = new FormLayout();
-        tipoDeMovimentacao = new Select<>();
-        tipoDeMovimentacao.setLabel("Tipo de Movimentação");
-        tipoDeMovimentacao.setItems(TipoMovimentacao.values());
-        tipoDeMovimentacao.setItemLabelGenerator(TipoMovimentacao::getValue);
-        dataHoraDeInicio = new DateTimePicker("Data&Hora de Início");
-        dataHoraDeInicio.setMax(LocalDateTime.now());
-        dataHoraDeFim = new DateTimePicker("Data&Hora do Fim");
-        dataHoraDeFim.setMax(LocalDateTime.now());
-        numeroDoContainer = new Select<>();
-        numeroDoContainer.setLabel("Núm. do Container");
-        numeroDoContainer.setItems(containerService.list(Pageable.unpaged()).map(genericEntity -> {
+        transactionType = new Select<>();
+        transactionType.setLabel("Tipo de Movimentação");
+        transactionType.setItems(TransactionType.values());
+        transactionType.setItemLabelGenerator(TransactionType::getValue);
+        startDateAndTime = new DateTimePicker("Data&Hora de Início");
+        startDateAndTime.setMax(LocalDateTime.now());
+        endDateAndTime = new DateTimePicker("Data&Hora do Fim");
+        endDateAndTime.setMax(LocalDateTime.now());
+        containerNumber = new Select<>();
+        containerNumber.setLabel("Núm. do Container");
+        containerNumber.setItems(containerService.list(Pageable.unpaged()).map(genericEntity -> {
             Container container = new Container();
             BeanUtils.copyProperties(genericEntity,container);
             return container;
         }).toList());
-        numeroDoContainer.setItemLabelGenerator(Container::getNumero);
-        //numeroDoContainer.setPattern("^[a-zA-Z]{4}[0-9]{7}$");
-        numeroDoContainer.setHelperText("Use uma sequência de 4 letras e 7 números. Ex.: CONT1234567");
+        containerNumber.setItemLabelGenerator(Container::getNumber);
+        //containerNumber.setPattern("^[a-zA-Z]{4}[0-9]{7}$");
+        containerNumber.setHelperText("Use uma sequência de 4 letras e 7 números. Ex.: CONT1234567");
         //Condicional para o form de cadastro.
-        if(movimentacao != null) {
-            tipoDeMovimentacao.setValue(movimentacao.getTipoDeMovimentacao());
-            dataHoraDeInicio.setValue(movimentacao.getDataHoraDeInicio());
-            dataHoraDeFim.setValue(movimentacao.getDataHoraDeFim());
-            numeroDoContainer.setValue(movimentacao.getContainer());
+        if(transaction != null) {
+            transactionType.setValue(transaction.getTransactionType());
+            startDateAndTime.setValue(transaction.getStartDateTime());
+            endDateAndTime.setValue(transaction.getEndDateTime());
+            containerNumber.setValue(transaction.getContainer());
         }
 
-        Component[] fields = new Component[]{tipoDeMovimentacao,dataHoraDeInicio,dataHoraDeFim, numeroDoContainer};
+        Component[] fields = new Component[]{transactionType,startDateAndTime,endDateAndTime, containerNumber};
 
         // Bind fields. This is where you'd define e.g. validation rules
-        binder.forField(dataHoraDeInicio).withValidator(startDateTime -> !(startDateTime.isAfter(LocalDateTime.now())),
-                "A data e horário de início não podem ser posteriores a hoje").bind(Movimentacao::getDataHoraDeInicio, Movimentacao::setDataHoraDeInicio);
-        binder.forField(dataHoraDeFim).withValidator(endDateTime ->!(LocalDateTime.now().isBefore(endDateTime)),
-                "A data e horário do fim não podem ser posteriores a hoje").withValidator(endDateTime -> !(endDateTime.isBefore(dataHoraDeInicio.getValue())),
-                "O final da operacão não pode ser anterior ao início da operação").bind(Movimentacao::getDataHoraDeFim, Movimentacao::setDataHoraDeFim);
+        binder.forField(startDateAndTime).withValidator(startDateTime -> !(startDateTime.isAfter(LocalDateTime.now())),
+                "A data e horário de início não podem ser posteriores a hoje").bind(Transaction::getStartDateTime, Transaction::setStartDateTime);
+        binder.forField(endDateAndTime).withValidator(endDateTime ->!(LocalDateTime.now().isBefore(endDateTime)),
+                "A data e horário do fim não podem ser posteriores a hoje").withValidator(endDateTime -> !(endDateTime.isBefore(startDateAndTime.getValue())),
+                "O final da operacão não pode ser anterior ao início da operação").bind(Transaction::getEndDateTime, Transaction::setEndDateTime);
 
-        binder.forField(numeroDoContainer).withValidator(numero -> (Pattern.matches("^[a-zA-Z]{4}[0-9]{7}$",numero.getNumero())),
+        binder.forField(containerNumber).withValidator(numero -> (Pattern.matches("^[a-zA-Z]{4}[0-9]{7}$",numero.getNumber())),
                         "Por favor, use uma sequência de 4 letras e 7 números. Ex.: CONT1234567")
-                .bind(Movimentacao::getContainer,Movimentacao::setContainer);
+                .bind(Transaction::getContainer, Transaction::setContainer);
         binder.bindInstanceFields(this);
 
         formLayout.add(fields);
@@ -381,7 +380,7 @@ public class MovimentacoesView extends Div {
     }
 
     private void refreshGrid() {
-        this.movimentacao = null;
+        this.transaction = null;
         grid.getLazyDataView().refreshAll();
     }
 }

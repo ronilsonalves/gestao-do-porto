@@ -64,29 +64,6 @@ public class ClientsView extends Div {
 
     private GridPro<Client> grid = new GridPro<>(Client.class);
 
-    private Grid.Column<Client> clientName;
-    private Grid.Column<Client> clientSurname;
-    private Grid.Column<Client> clientDocument;
-    private Grid.Column<Client> clientBirthdate;
-    private Grid.Column<Client> clientEmail;
-    private Grid.Column<Client> clientPhone;
-    private Grid.Column<Client> clientAddress;
-
-    private TextField clientNameField;
-    private TextField clientSurnameField;
-    private TextField clientDocumentField;
-    private DatePicker clientBirthdateField;
-    private EmailField clientEmailField;
-    private TextField clientPhoneField;
-    private TextField cliLogAddress;
-    private TextField cliNumAddress;
-    private TextField cliZipAddress;
-    private TextField cliNeighborhoodAddress;
-    private TextField cliCityAddress;
-    private Select<State> cliStateAddress;
-
-    private Button addClientBtn;
-
     private BeanValidationBinder<Client> clientBinder;
     private BeanValidationBinder<Address> cliAddressBinder;
 
@@ -94,28 +71,25 @@ public class ClientsView extends Div {
     private Address address;
 
     private final ClientServiceImpl clientService;
-    private final AddressServiceImpl addressService;
-    private final GenericEntityServiceImpl containerService;
 
-    public ClientsView(ClientRepository repository, AddressRepository endRepository, ContainerRepository contRepository) {
-        this.addressService = new AddressServiceImpl(endRepository);
-        this.clientService = new ClientServiceImpl(repository,addressService);
-        this.containerService = new ContainerServiceImpl(contRepository);
+    public ClientsView(ClientRepository repository, AddressRepository endRepository) {
+        AddressServiceImpl addressService = new AddressServiceImpl(endRepository);
+        this.clientService = new ClientServiceImpl(repository, addressService);
 
         addClassName("clients-view");
         setSizeFull();
 
-        addClientBtn = new Button("Adicionar Cliente", new Icon(VaadinIcon.USER), (add) -> {
+        Button addClientBtn = new Button("Adicionar Cliente", new Icon(VaadinIcon.USER), (add) -> {
             Dialog dialog = new Dialog();
-            dialog.getElement().setAttribute("aria-label","Adicionar novo cliente");
+            dialog.getElement().setAttribute("aria-label", "Adicionar novo cliente");
 
-            VerticalLayout addLayout = createOrEdit(dialog,this.client);
+            VerticalLayout addLayout = createOrEdit(dialog, this.client);
             dialog.add(addLayout);
             dialog.setHeaderTitle("Adicioanr novo cliente");
 
             Button saveBtn = new Button("Salvar", (save) -> {
                 try {
-                    if(this.client == null) {
+                    if (this.client == null) {
                         this.client = new Client();
                         this.address = new Address();
                     }
@@ -132,12 +106,12 @@ public class ClientsView extends Div {
                     UI.getCurrent().navigate(ClientsView.class);
                 } catch (ValidationException validationException) {
                     Notification.show("Certifique-se de preencher todos os campos corretamente",
-                            4500, Notification.Position.BOTTOM_CENTER)
+                                    4500, Notification.Position.BOTTOM_CENTER)
                             .addThemeVariants(NotificationVariant.LUMO_ERROR);
                 }
             });
-            saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY,ButtonVariant.LUMO_SUCCESS);
-            saveBtn.getStyle().set("margin-right","auto");
+            saveBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
+            saveBtn.getStyle().set("margin-right", "auto");
             dialog.getFooter().add(saveBtn);
 
             Button cancelBtn = new Button("Cancelar", (cancel) -> dialog.close());
@@ -186,7 +160,6 @@ public class ClientsView extends Div {
     }
 
     private void createActionColumn() {
-        //Falta construir os métodos das opções deste actionMenu
         grid.addComponentColumn(client -> {
             MenuBar menuBar = new MenuBar();
             menuBar.addThemeVariants(MenuBarVariant.LUMO_TERTIARY);
@@ -254,7 +227,7 @@ public class ClientsView extends Div {
 
                 VerticalLayout deleteLayout = showDetailsOrDelete(dialog,client);
                 dialog.add(deleteLayout);
-                dialog.setHeaderTitle(String.format("Excluir cliente com documento: \"%s\" ?", client.getDocumento()));
+                dialog.setHeaderTitle(String.format("Excluir cliente com documento: \"%s\" ?", client.getDocument()));
                 Button deleteButton = new Button("Excluir cliente", (delete) -> {
                     try {
                         this.clientService.delete(client.getId());
@@ -285,50 +258,50 @@ public class ClientsView extends Div {
     }
 
     private void createClientNameColumn() {
-        clientName = grid.addColumn(new ComponentRenderer<>(client -> {
+        Grid.Column<Client> clientName = grid.addColumn(new ComponentRenderer<>(client -> {
             HorizontalLayout horizontalLayout = new HorizontalLayout();
             horizontalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
             Span span = new Span();
             span.setClassName("clientName");
-            span.setText(client.getNome());
+            span.setText(client.getName());
             horizontalLayout.add(span);
             return horizontalLayout;
-        })).setSortable(true).setComparator(Client::getNome).setHeader("Nome");
+        })).setSortable(true).setComparator(Client::getName).setHeader("Nome");
     }
 
     private void createClientSurnameColumn() {
-        clientSurname = grid.addColumn(new ComponentRenderer<>(client -> {
+        Grid.Column<Client> clientSurname = grid.addColumn(new ComponentRenderer<>(client -> {
             HorizontalLayout horizontalLayout = new HorizontalLayout();
             horizontalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
             Span span = new Span();
             span.setClassName("clientSurname");
-            span.setText(client.getSobrenome());
+            span.setText(client.getSurname());
             horizontalLayout.add(span);
             return horizontalLayout;
-        })).setSortable(true).setComparator(Client::getSobrenome).setHeader("Sobrenome");
+        })).setSortable(true).setComparator(Client::getSurname).setHeader("Sobrenome");
     }
 
     private void createClientDocumentColumn() {
-        clientDocument = grid.addColumn(new ComponentRenderer<>(client -> {
+        Grid.Column<Client> clientDocument = grid.addColumn(new ComponentRenderer<>(client -> {
             HorizontalLayout horizontalLayout = new HorizontalLayout();
             horizontalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
             Span span = new Span();
             span.setClassName("clientDocument");
-            span.setText(client.getDocumento());
+            span.setText(client.getDocument());
             horizontalLayout.add(span);
             return horizontalLayout;
-        })).setSortable(true).setComparator(Client::getDocumento).setHeader("CNPJ/CPF");
+        })).setSortable(true).setComparator(Client::getDocument).setHeader("CNPJ/CPF");
     }
 
     private void createClientBirthdateColumn() {
-        clientBirthdate = grid.addColumn(new LocalDateRenderer<>(Client::getDataDeNascimento,
-                DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+        Grid.Column<Client> clientBirthdate = grid.addColumn(new LocalDateRenderer<>(Client::getBirthDate,
+                        DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                 .setSortable(true)
-                .setComparator(Client::getDataDeNascimento).setHeader("Data de Nascimento");
+                .setComparator(Client::getBirthDate).setHeader("Data de Nascimento");
     }
 
     private void createClientEmailColumn() {
-        clientEmail = grid.addColumn(new ComponentRenderer<>(client -> {
+        Grid.Column<Client> clientEmail = grid.addColumn(new ComponentRenderer<>(client -> {
             HorizontalLayout horizontalLayout = new HorizontalLayout();
             horizontalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
             Span span = new Span();
@@ -340,19 +313,19 @@ public class ClientsView extends Div {
     }
 
     private void createClientPhoneColumn() {
-        clientPhone = grid.addColumn(new ComponentRenderer<>(client -> {
+        Grid.Column<Client> clientPhone = grid.addColumn(new ComponentRenderer<>(client -> {
             HorizontalLayout horizontalLayout = new HorizontalLayout();
             horizontalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
             Span span = new Span();
             span.setClassName("clientPhone");
-            span.setText(client.getTelefone());
+            span.setText(client.getPhone());
             horizontalLayout.add(span);
             return horizontalLayout;
-        })).setSortable(true).setComparator(Client::getTelefone).setHeader("Telefone");
+        })).setSortable(true).setComparator(Client::getPhone).setHeader("Telefone");
     }
 
     private void createClientAddressColumn() {
-        clientAddress = grid.addColumn(new ComponentRenderer<>(client -> {
+        Grid.Column<Client> clientAddress = grid.addColumn(new ComponentRenderer<>(client -> {
             HorizontalLayout horizontalLayout = new HorizontalLayout();
             Span span = new Span();
             span.setClassName("clientAddress");
@@ -365,28 +338,28 @@ public class ClientsView extends Div {
     private String formatAddress(Client client) {
         Address address = client.getAddress();
 
-        return String.format("%s, %s, %s, %s - %s, %s",address.getLogradouro(),
-                address.getNumero(),address.getBairro(),address.getCidade(),address.getEstado(),
-                address.getCEP());
+        return String.format("%s, %s, %s, %s - %s, %s",address.getStreetAddress(),
+                address.getNumber(),address.getNeighborhood(),address.getCity(),address.getState(),
+                address.getZIPCode());
     }
 
     private VerticalLayout showDetailsOrDelete(Dialog dialog, Client client) {
-        TextField name = new TextField("Nome",client.getNome(),client.getNome());
+        TextField name = new TextField("Nome",client.getName(),client.getName());
         name.setReadOnly(true);
 
-        TextField surname = new TextField("Sobrenome",client.getSobrenome(),client.getSobrenome());
+        TextField surname = new TextField("Sobrenome",client.getSurname(),client.getSurname());
         surname.setReadOnly(true);
 
-        TextField document = new TextField("Documento",client.getDocumento(),client.getDocumento());
+        TextField document = new TextField("Documento",client.getDocument(),client.getDocument());
         document.setReadOnly(true);
 
-        TextField birthdate = new TextField("Data de Nascimento",client.getDataDeNascimento().toString(),client.getDataDeNascimento().toString());
+        TextField birthdate = new TextField("Data de Nascimento",client.getBirthDate().toString(),client.getBirthDate().toString());
         birthdate.setReadOnly(true);
 
         TextField email = new TextField("Email",client.getEmail(),client.getEmail());
         email.setReadOnly(true);
 
-        TextField phone = new TextField("Telefone",client.getTelefone(),client.getTelefone());
+        TextField phone = new TextField("Telefone",client.getPhone(),client.getPhone());
         phone.setReadOnly(true);
 
         TextField address = new TextField("Endereço",formatAddress(client),formatAddress(client));
@@ -415,70 +388,69 @@ public class ClientsView extends Div {
         }
 
         FormLayout formLayout = new FormLayout();
-        clientNameField = new TextField("Nome");
-        clientSurnameField = new TextField("Sobrenome");
-        clientDocumentField = new TextField("Documento (CNPJ/CPF)");
-        clientBirthdateField = new DatePicker("Data de Nascimento");
+        TextField clientNameField = new TextField("Nome");
+        TextField clientSurnameField = new TextField("Sobrenome");
+        TextField clientDocumentField = new TextField("Documento (CNPJ/CPF)");
+        DatePicker clientBirthdateField = new DatePicker("Data de Nascimento");
         clientBirthdateField.setPlaceholder("dd/mm/aaaa");
         clientBirthdateField.setMax(LocalDate.now().minus(18, ChronoUnit.YEARS));
-        clientEmailField = new EmailField("Email");
-        clientPhoneField = new TextField("Telefone");
-        //clientPhoneField.setPattern("^[]");
-        cliLogAddress = new TextField("Logradouro");
-        cliNumAddress = new TextField("Número");
-        cliNeighborhoodAddress = new TextField("Bairro");
-        cliCityAddress = new TextField("Cidade");
-        cliStateAddress = new Select<>();
+        EmailField clientEmailField = new EmailField("Email");
+        TextField clientPhoneField = new TextField("Telefone");
+        TextField cliLogAddress = new TextField("Logradouro");
+        TextField cliNumAddress = new TextField("Número");
+        TextField cliNeighborhoodAddress = new TextField("Bairro");
+        TextField cliCityAddress = new TextField("Cidade");
+        Select<State> cliStateAddress = new Select<>();
         cliStateAddress.setLabel("Estado");
         cliStateAddress.setItems(State.values());
         cliStateAddress.setItemLabelGenerator(State::getValue);
-        cliZipAddress = new TextField("CEP");
+        TextField cliZipAddress = new TextField("CEP");
         cliZipAddress.setHelperText("Por favor, inserir somente números.");
 
         if(client != null) {
-            clientNameField.setValue(client.getNome());
-            clientSurnameField.setValue(client.getSobrenome());
-            clientDocumentField.setValue(client.getDocumento());
-            clientBirthdateField.setValue(client.getDataDeNascimento());
+            clientNameField.setValue(client.getName());
+            clientSurnameField.setValue(client.getSurname());
+            clientDocumentField.setValue(client.getDocument());
+            clientBirthdateField.setValue(client.getBirthDate());
             clientEmailField.setValue(client.getEmail());
-            clientPhoneField.setValue(client.getTelefone());
-            cliLogAddress.setValue(clientAddress.getLogradouro());
-            cliNumAddress.setValue(clientAddress.getNumero());
-            cliNeighborhoodAddress.setValue(clientAddress.getBairro());
-            cliCityAddress.setValue(clientAddress.getCidade());
-            cliStateAddress.setValue(clientAddress.getEstado());
-            cliZipAddress.setValue(clientAddress.getCEP());
+            clientPhoneField.setValue(client.getPhone());
+            cliLogAddress.setValue(clientAddress.getStreetAddress());
+            cliNumAddress.setValue(clientAddress.getNumber());
+            cliNeighborhoodAddress.setValue(clientAddress.getNeighborhood());
+            cliCityAddress.setValue(clientAddress.getCity());
+            cliStateAddress.setValue(clientAddress.getState());
+            cliZipAddress.setValue(clientAddress.getZIPCode());
         }
 
-        Component[] fields = new Component[] {clientNameField,clientSurnameField,clientDocumentField,clientBirthdateField,clientEmailField,clientPhoneField};
-        Component[] fieldsAddress = new Component[] {cliLogAddress,cliNumAddress,cliNeighborhoodAddress,cliCityAddress,cliStateAddress,cliZipAddress};
+        Component[] fields = new Component[] {clientNameField, clientSurnameField, clientDocumentField, clientBirthdateField, clientEmailField, clientPhoneField};
+        Component[] fieldsAddress = new Component[] {cliLogAddress, cliNumAddress, cliNeighborhoodAddress, cliCityAddress, cliStateAddress, cliZipAddress};
 
         //Now we can apply the validation rules to the fields
-        clientBinder.forField(clientNameField).asRequired("Por favor, insira o nome do cliente.").bind(Client::getNome, Client::setNome);
-        clientBinder.forField(clientSurnameField).asRequired("Por favor, insira o sobrenome do cliente.").bind(Client::getSobrenome, Client::setSobrenome);
+        clientBinder.forField(clientNameField).asRequired("Por favor, insira o nome do cliente.").bind(Client::getName, Client::setName);
+        clientBinder.forField(clientSurnameField).asRequired("Por favor, insira o sobrenome do cliente.").bind(Client::getSurname, Client::setSurname);
         clientBinder.forField(clientDocumentField).asRequired("Por favor, insira o número do documento do cliente.")
                 .withValidator(numero -> Pattern.matches("([0-9]{2}[\\.]?[0-9]{3}[\\.]?[0-9]{3}[\\/]?[0-9]{4}[-]?[0-9]{2})|([0-9]{3}[\\.]?[0-9]{3}[\\.]?[0-9]{3}[-]?[0-9]{2})",numero),
-                        "Por favor, informe um número de documento válido.").bind(Client::getDocumento, Client::setDocumento);
+                        "Por favor, informe um número de documento válido.").bind(Client::getDocument, Client::setDocument);
         clientBinder.forField(clientBirthdateField).asRequired("Por favor, insira a data de nascimento do cliente.")
                 .withValidator(birthDate ->!(birthDate.isAfter(LocalDate.now())),
                         "Por favor, insira a data de nascimento do cliente corretamente")
                 .withValidator(birthDate -> (birthDate.isBefore(LocalDate.now().minus(18, ChronoUnit.YEARS))),
-                        "O cliente deverá ser maior de idade").bind(Client::getDataDeNascimento, Client::setDataDeNascimento);
+                        "O cliente deverá ser maior de idade").bind(Client::getBirthDate, Client::setBirthDate);
         clientBinder.forField(clientEmailField).asRequired("Por favor, insira o email do cliente.")
                 .withValidator(new EmailValidator(
                         "O endereço de e-mail informado parece não ser válido, por favor, verifique o endereço informado.")).bind(Client::getEmail, Client::setEmail);
         clientBinder.forField(clientPhoneField).asRequired("Por favor, insira o telefone do cliente.")
                 .withValidator(numero -> (Pattern.matches("^\\(?[1-9]{2}\\)?\\s?\\d{4,5}(\\-|\\s)?\\d{4}$",numero)),
-                        "Por favor, insira um número de telefone/celular válido.").bind(Client::getTelefone, Client::setTelefone);
+                        "Por favor, insira um número de telefone/celular válido.").bind(Client::getPhone, Client::setPhone);
         clientBinder.bindInstanceFields(this);
-        cliAddressBinder.forField(cliLogAddress).asRequired("Por favor, insira o logradouro do cliente.").bind(Address::getLogradouro, Address::setLogradouro);
+        cliAddressBinder.forField(cliLogAddress).asRequired("Por favor, insira o logradouro do cliente.").bind(Address::getStreetAddress, Address::setStreetAddress);
         cliAddressBinder.forField(cliNumAddress).asRequired("Por favor, insira o número do endereço.")
                 .withValidator(numero -> (Pattern.matches("s|S(n|S|N)|[0-9]{1,5}$",numero)),
-                        "Por favor, informe um número válido. Se não possuir, digite SN").bind(Address::getNumero, Address::setNumero);
-        cliAddressBinder.forField(cliNeighborhoodAddress).asRequired("Por favor, insira o bairro do cliente.").bind(Address::getBairro, Address::setBairro);
-        cliAddressBinder.forField(cliCityAddress).asRequired("Por favor, insira a cidade do cliente.").bind(Address::getCidade, Address::setCidade);
-        cliAddressBinder.forField(cliStateAddress).asRequired("Por favor, insira o estado do cliente.").bind(Address::getEstado, Address::setEstado);
-        cliAddressBinder.forField(cliZipAddress).asRequired("Por favor, insira o CEP do cliente.").bind(Address::getCEP, Address::setCEP);
+                        "Por favor, informe um número válido. Se não possuir, digite SN").bind(Address::getNumber, Address::setNumber);
+        cliAddressBinder.forField(cliNeighborhoodAddress).asRequired("Por favor, insira o bairro do cliente.").bind(Address::getNeighborhood, Address::setNeighborhood);
+        cliAddressBinder.forField(cliCityAddress).asRequired("Por favor, insira a cidade do cliente.").bind(Address::getCity, Address::setCity);
+        cliAddressBinder.forField(cliStateAddress).asRequired("Por favor, insira o estado do cliente.").bind(Address::getState, Address::setState);
+        cliAddressBinder.forField(cliZipAddress).asRequired("Por favor, insira o CEP do cliente.").bind(Address::getZIPCode, Address::setZIPCode);
 
         formLayout.add(fields);
         formLayout.add(fieldsAddress);
