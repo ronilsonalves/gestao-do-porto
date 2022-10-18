@@ -1,9 +1,10 @@
 package com.ronilsonalves.gestaoporto.views;
 
 
+import com.ronilsonalves.gestaoporto.views.clientes.ClientsView;
 import com.ronilsonalves.gestaoporto.views.containers.ContainersView;
-import com.ronilsonalves.gestaoporto.views.relatorio.RelatorioView;
-import com.ronilsonalves.gestaoporto.views.transacoes.MovimentacoesView;
+import com.ronilsonalves.gestaoporto.views.dashboard.DashboardView;
+import com.ronilsonalves.gestaoporto.views.transactions.TransactionsView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.dependency.NpmPackage;
@@ -97,12 +98,15 @@ public class MainLayout extends AppLayout {
     }
 
     private MenuItemInfo[] createMenuItems() {
-        return new MenuItemInfo[]{ //
+        return new MenuItemInfo[]{
+
+                new MenuItemInfo("Dashboard", "la la-chart-area", DashboardView.class), //
+
+                new MenuItemInfo("Clientes", "la la-users", ClientsView.class), //
+
                 new MenuItemInfo("Containers", "la la-columns", ContainersView.class), //
 
-                new MenuItemInfo("Movimentações", "la la-th", MovimentacoesView.class), //
-
-                new MenuItemInfo("Relatórios", "la la-chart-area", RelatorioView.class), //
+                new MenuItemInfo("Transações", "la la-th", TransactionsView.class), //
 
         };
     }
