@@ -7,7 +7,7 @@ Vaadin Flow para servir o front-end da aplicação.
 > Você pode vizualizar a aplicação rodando em um container do serviço de applicativos da Azure [_clicando aqui_](https://gestaodoportoapp.azurewebsites.net)
 
 ## Captura de tela
-![Captura de tela](screenshot.png)
+![Captura de tela](screenshot.jpeg)
 
 ## O Desafio
 Construir uma aplicação web para gerir containers e movimentações de um porto
