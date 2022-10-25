@@ -4,9 +4,15 @@ Este projeto tem como objetivo a criação de um CRUD simples para gerenciar
 contêineres e suas movimentações de um porto utilizando o Spring para o Back-end e o 
 Vaadin Flow para servir o front-end da aplicação.
 
-> Você pode vizualizar a aplicação rodando em um container do serviço de applicativos da Azure [_clicando aqui_](https://gestaodoportoapp.azurewebsites.net)
+> Você pode vizualizar a aplicação rodando em um container do serviço de aplicativos da Azure
+> [_clicando aqui_](https://gestaodoportoapp.azurewebsites.net).
+> *Por ser um serviço gratuito, pode apresentar
+> alguma lentidão e/ou indisponibilidade. Persistindo tal comportamento por muitos minutos, favor atualizar a página.
 
-## Captura de tela
+## Capturas de tela
+>Tela de login
+![Tela de login](screenshot-login.jpeg)
+>Dashboard
 ![Captura de tela](screenshot.jpeg)
 
 ## O Desafio
@@ -29,9 +35,10 @@ seguindo os seguintes requisitos funcionais:
 ## Tecnologias utilizadas
 Foram usadas para construir essa aplicação os seguintes recursos:
 
-- Spring
+- Spring Boot
+- Spring Security
 - JPA
-- H2 Database (in memorian)
+- H2 Database (in memoria)
 - Vaadin Flow (Front-end)
 
 ## Rodando a aplicação
