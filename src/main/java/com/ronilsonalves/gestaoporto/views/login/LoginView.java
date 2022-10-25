@@ -12,7 +12,7 @@ import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 @AnonymousAllowed
-@PageTitle("Login to Gestão Porto")
+@PageTitle("Entrar - Gestão do Porto")
 @Route(value = "login")
 public class LoginView extends LoginOverlay implements BeforeEnterObserver {
 
@@ -24,8 +24,8 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver {
 
         LoginI18n i18n = LoginI18n.createDefault();
         i18n.setHeader(new LoginI18n.Header());
-        i18n.getHeader().setTitle("Gestão Porto");
-        i18n.getHeader().setDescription("Login usando user/user ou admin/admin");
+        i18n.getHeader().setTitle("Gestão do Porto");
+        i18n.getHeader().setDescription("Utilize admin/admin para logar na aplicação");
         i18n.setAdditionalInformation(null);
         setI18n(i18n);
 

@@ -1,9 +1,5 @@
 package com.ronilsonalves.gestaoporto.views;
 
-import com.example.application.data.entity.User;
-import com.example.application.security.AuthenticatedUser;
-import com.example.application.views.dashboard.DashboardView;
-import com.example.application.views.list.ListView;
 import com.ronilsonalves.gestaoporto.data.entity.User;
 import com.ronilsonalves.gestaoporto.security.AuthenticatedUser;
 import com.ronilsonalves.gestaoporto.views.clientes.ClientsView;
@@ -105,9 +101,6 @@ public class MainLayout extends AppLayout {
             User user = maybeUser.get();
 
             Avatar avatar = new Avatar(user.getName());
-            String resource = new StreamResource("profile-pic",
-                    () -> new ByteArrayInputStream(user.getProfilePicture()));
-            avatar.setImageResource(resource);
             avatar.setThemeName("xsmall");
             avatar.getElement().setAttribute("tabindex", "-1");
 
