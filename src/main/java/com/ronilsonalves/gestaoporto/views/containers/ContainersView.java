@@ -41,6 +41,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import javax.annotation.security.RolesAllowed;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -50,6 +51,7 @@ import java.util.stream.Collectors;
 @PageTitle("Gestão de Containers - Gestão do Porto")
 @Route(value = "/containers/:containerID?/:action?(edit)", layout = MainLayout.class)
 @Uses(Icon.class)
+@RolesAllowed("ADMIN")
 public class ContainersView extends Div implements BeforeEnterObserver {
 
     private final String CONTAINER_EDIT_ROUTE_TEMPLATE = "/containers/%s/edit";

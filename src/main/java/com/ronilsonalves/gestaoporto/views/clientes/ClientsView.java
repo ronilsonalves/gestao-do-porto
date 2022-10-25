@@ -51,6 +51,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 
+import javax.annotation.security.RolesAllowed;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -60,6 +61,7 @@ import java.util.regex.Pattern;
 @PageTitle("Clients - Gestão do Porto")
 @Route(value = "/clients", layout = MainLayout.class)
 @Uses(Icon.class)
+@RolesAllowed("ADMIN")
 public class ClientsView extends Div {
 
     private GridPro<Client> grid = new GridPro<>(Client.class);

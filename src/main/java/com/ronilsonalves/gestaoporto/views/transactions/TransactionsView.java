@@ -46,6 +46,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import javax.annotation.security.RolesAllowed;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
@@ -53,6 +54,7 @@ import java.util.regex.Pattern;
 @PageTitle("Gestão de Movimentações - Gestão do Porto")
 @Route(value = "/transactions",layout = MainLayout.class)
 @Uses(Icon.class)
+@RolesAllowed("ADMIN")
 public class TransactionsView extends Div {
 
     private GridPro<Transaction> grid = new GridPro<>(Transaction.class);

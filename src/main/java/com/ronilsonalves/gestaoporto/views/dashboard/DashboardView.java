@@ -42,12 +42,14 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.BeanUtils;
 
+import javax.annotation.security.RolesAllowed;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @PageTitle("Dashboard - Gestão do Porto")
 @Route(value = "/", layout = MainLayout.class)
+@RolesAllowed("ADMIN")
 public class DashboardView extends Main {
 
     private final Board report = new Board();

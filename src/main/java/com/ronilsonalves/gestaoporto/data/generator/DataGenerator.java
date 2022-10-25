@@ -1,14 +1,8 @@
 package com.ronilsonalves.gestaoporto.data.generator;
 
-import com.ronilsonalves.gestaoporto.data.entity.Client;
-import com.ronilsonalves.gestaoporto.data.entity.Container;
-import com.ronilsonalves.gestaoporto.data.entity.Address;
-import com.ronilsonalves.gestaoporto.data.entity.Transaction;
+import com.ronilsonalves.gestaoporto.data.entity.*;
 import com.ronilsonalves.gestaoporto.data.enums.*;
-import com.ronilsonalves.gestaoporto.data.repository.ClientRepository;
-import com.ronilsonalves.gestaoporto.data.repository.ContainerRepository;
-import com.ronilsonalves.gestaoporto.data.repository.GenericEntityRepository;
-import com.ronilsonalves.gestaoporto.data.repository.TransactionRepository;
+import com.ronilsonalves.gestaoporto.data.repository.*;
 import com.vaadin.exampledata.DataType;
 import com.vaadin.exampledata.ExampleDataGenerator;
 import com.vaadin.flow.spring.annotation.SpringComponent;
@@ -21,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -28,7 +23,7 @@ import java.util.Random;
 public class DataGenerator {
 
     @Bean
-    public CommandLineRunner loadData(ContainerRepository containerRepository, TransactionRepository transactionRepository, ClientRepository clientRepository, GenericEntityRepository<Address> ERepository) {
+    public CommandLineRunner loadData(ContainerRepository containerRepository, TransactionRepository transactionRepository, ClientRepository clientRepository, GenericEntityRepository<Address> ERepository, UserRepository userRepository) {
         return args -> {
             Logger logger = LoggerFactory.getLogger(getClass());
             if (containerRepository.count() != 0L && transactionRepository.count() !=0L && clientRepository.count() != 0L) {
@@ -37,6 +32,10 @@ public class DataGenerator {
             }
 
             logger.info("Generating demo data");
+            logger.info("Generating user with admin previleges...");
+
+            User user = new User("admin","Administrador","$2y$10$3NAqGB2jjZj04TY3MdtwkuZJolpA5m11.ulosEM5oggifwViW3TTa",Collections.singleton(Role.ADMIN),"https://cdn.ronilsonalves.com/projetos/gestao-do-porto/avatar.svg");
+            userRepository.save(user);
 
             Address addressSP = ERepository.save(new Address("Rua 1","234","12345000","Centro","São Paulo", State.SP));
             Address addressMA = ERepository.save(new Address("Rua 2","567","65000000","Centro","São Luís", State.MA));
